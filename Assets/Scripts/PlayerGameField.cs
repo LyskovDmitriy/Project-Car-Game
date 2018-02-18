@@ -35,7 +35,7 @@ public class PlayerGameField : MonoBehaviour
 	}
 
 
-	void Start()
+	void OnEnable()
 	{
 		CurrentScore = 0;
 		scoreText.text = CurrentScore.ToString();

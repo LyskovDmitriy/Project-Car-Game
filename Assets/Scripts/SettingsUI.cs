@@ -4,24 +4,28 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class MainMenuUI : MonoBehaviour 
+public class SettingsUI : MonoBehaviour 
 {
 
 	public GameObject gameSettingsScreen;
 	public Dropdown playersNumberDropdown;
 	public InputField[] inputFields;
+	public Toggle cityWordsToggle;
+	public Toggle countrysideWordsToggle;
 	public int minNumberOfPlayers;
 	public int maxNumberOfPlayers;
 	public int defaultNumberOfPlayers;
 
 
+	private GameUI gameUI;
 	private int currentNumberOfPlayers;
+	private bool cityWordsActive;
+	private bool countrysideWordsActive;
 
 
 	public void ActivateGameSettingsScreen()
 	{
 		gameSettingsScreen.SetActive(true);
-		//TODO can load previous game settings
 	}
 
 
@@ -48,7 +52,35 @@ public class MainMenuUI : MonoBehaviour
 	public void StartGame()
 	{
 		SavePlayerData();
-		SceneManager.LoadScene("Game");
+		gameUI.StartGame();
+		gameSettingsScreen.SetActive(false);
+	}
+
+
+	public void WordTogglePressed()
+	{
+		cityWordsActive = cityWordsToggle.isOn;
+		countrysideWordsActive = countrysideWordsToggle.isOn;
+
+		if (cityWordsActive && !countrysideWordsActive)
+		{
+			cityWordsToggle.interactable = false;
+		}
+		else if (!cityWordsActive && countrysideWordsActive)
+		{
+			countrysideWordsToggle.interactable = false;
+		}
+		else if (cityWordsActive && countrysideWordsActive)
+		{
+			cityWordsToggle.interactable = true;
+			countrysideWordsToggle.interactable = true;
+		}
+	}
+
+
+	void Awake()
+	{
+		gameUI = FindObjectOfType<GameUI>();
 	}
 
 
@@ -65,6 +97,11 @@ public class MainMenuUI : MonoBehaviour
 		ChangeNumberOfPlayers(defaultNumberOfPlayers - minNumberOfPlayers);
 
 		currentNumberOfPlayers = defaultNumberOfPlayers;
+
+		cityWordsActive = true;
+		countrysideWordsActive = true;
+		cityWordsToggle.isOn = cityWordsActive;
+		countrysideWordsToggle.isOn = countrysideWordsActive;
 	}
 
 
@@ -84,5 +121,8 @@ public class MainMenuUI : MonoBehaviour
 				PlayerPrefs.SetString(playerString, inputFields[i].text);
 			}
 		}
+
+		PlayerPrefs.SetInt("City", cityWordsActive ? 1 : 0);
+		PlayerPrefs.SetInt("Countryside", countrysideWordsActive ? 1 : 0);
 	}
 }

@@ -9,17 +9,15 @@ using UnityEngine.SceneManagement;
 public class GameUI : MonoBehaviour 
 {
 
-	public PlayerGameField[] playerFields;
+	public GameObject gameScreen;
 	public GameObject finishGameScreen;
-	public Text winnerText;
-	//to display score when the game is finished
-	public Text[] playerNameTexts;
-	public Text[] playerScoreTexts;
-
+	public PlayerGameField[] playerFields;
 	public Text wordText;
-	public string dataFileName;
+	public string cityFileName;
+	public string countrysideFileName;
 
 
+	private FinishGameUI finishGameUI;
 	private WordsList wordsList;
 	private string lastWord;
 
@@ -48,6 +46,7 @@ public class GameUI : MonoBehaviour
 
 	public void FinishGame()
 	{
+		gameScreen.SetActive(false);
 		finishGameScreen.SetActive(true);
 
 		List<Player> players = new List<Player>();
@@ -62,82 +61,103 @@ public class GameUI : MonoBehaviour
 				return y.score.CompareTo(x.score); //to sort descending
 			});
 		
-		for (int i = 0; i < players.Count; i++)
-		{
-			if (i == 0)
-			{
-				winnerText.text = players[i].name + " won!";
-			}
-			playerNameTexts[i].text = players[i].name;
-			playerScoreTexts[i].text = players[i].score.ToString();
-		}
+		finishGameUI.FinishGame(players);
 	}
 
 
-	public void Restart()
+	public void StartGame()
 	{
-		SceneManager.LoadScene(SceneManager.GetActiveScene().name);
-	}
-
-
-	public void LoadMainMenu()
-	{
-		SceneManager.LoadScene("MainMenu");
-	}
-
-
-	void LoadWordsData() //needs to be checked on each platform
-	{
-		string filePath = "";
-		#if UNITY_EDITOR || UNITY_STANDALONE_WIN
-			filePath = Path.Combine(Application.streamingAssetsPath, dataFileName);
-		#elif UNITY_ANDROID
-			filePath = Path.Combine("jar:file://" + Application.dataPath + "!/assets/", dataFileName);
-			WWW www = new WWW(filePath);
-			while (!www.isDone) {}
-			wordsList = JsonUtility.FromJson<WordsList>(www.text);
-		return;
-		#elif Unity_IOS
-			filePath Path.Combine(Application.dataPath + "/Raw", dataFileName);
-		#endif
-
-
-		if (File.Exists(filePath))
-		{
-			string dataAsJSON = File.ReadAllText(filePath);
-			wordsList = JsonUtility.FromJson<WordsList>(dataAsJSON);
-		}
-		else
-		{
-			Debug.Log("Can't find file with words");
-		}
-	}
-
-
-	void Start () 
-	{
-		PlayerGameField.onScoreChange += SetRandomWord;
+		gameScreen.SetActive(true);
 		int playerNumber = PlayerPrefs.GetInt("Number of players");
 
 		for (int i = 0; i < playerNumber; i++)
 		{
 			playerFields[i].gameObject.SetActive(true);
-			playerNameTexts[i].gameObject.SetActive(true);
-			playerScoreTexts[i].gameObject.SetActive(true);
 			string playerNameKey = "Player" + (i + 1);
 			playerFields[i].SetName(PlayerPrefs.GetString(playerNameKey));
 		}
 		for (int i = playerNumber; i < playerFields.Length; i++)
 		{
 			playerFields[i].gameObject.SetActive(false);
-			playerNameTexts[i].gameObject.SetActive(false);
-			playerScoreTexts[i].gameObject.SetActive(false);
 		}
 
 		lastWord = "";
 
 		LoadWordsData();
 		SetRandomWord();
+	}
+
+
+	void LoadWordsData() //needs to be checked on each platform
+	{
+		bool isCityActive = PlayerPrefs.GetInt("City") == 1;
+		bool isCountrysideActive = PlayerPrefs.GetInt("Countryside") == 1;
+		string cityPath = "";
+		string countrysidePath = "";
+		WordsList cityWords = null;
+		WordsList countrysideWords = null;
+	#if UNITY_EDITOR || UNITY_STANDALONE_WIN
+		if (isCityActive)
+		{
+			cityPath = Path.Combine(Application.streamingAssetsPath, cityFileName);
+		}
+		if (isCountrysideActive)
+		{
+			countrysidePath = Path.Combine(Application.streamingAssetsPath, countrysideFileName);
+		}
+
+		if (isCityActive && File.Exists(cityPath))
+		{
+			string dataAsJSON = File.ReadAllText(cityPath);
+			cityWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
+		}
+		if (isCountrysideActive && File.Exists(countrysidePath))
+		{
+			string dataAsJSON = File.ReadAllText(countrysidePath);
+			countrysideWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
+		}
+	#elif UNITY_ANDROID
+		cityPath = Path.Combine("jar:file://" + Application.dataPath + "!/assets/", cityFileName);
+		countrysidePath = Path.Combine("jar:file://" + Application.dataPath + "!/assets/", countrysideFileName);
+		WWW city = null;
+		WWW countryside = null;
+		if (isCityActive)
+		{
+			city = new WWW(cityPath);
+			while (!city.isDone) {}
+			cityWords = JsonUtility.FromJson<WordsList>(city.text);
+		}
+		if (isCountrysideActive)
+		{
+			countryside = new WWW(countrysidePath);
+			while (!countryside.isDone) {}
+			countrysideWords = JsonUtility.FromJson<WordsList>(countryside.text);
+		}
+	#elif Unity_IOS
+			filePath = Path.Combine(Application.dataPath + "/Raw", dataFileName);
+	#endif
+
+		if (isCityActive && !isCountrysideActive)
+		{
+			wordsList.words = cityWords.words;
+		}
+		else if (!isCityActive && isCountrysideActive)
+		{
+			wordsList.words = countrysideWords.words;
+		}
+		else
+		{
+			wordsList.words = cityWords.words;
+			wordsList.words.AddRange(countrysideWords.words);
+		}
+	}
+
+
+	void Awake () 
+	{
+		finishGameUI = FindObjectOfType<FinishGameUI>();
+		PlayerGameField.onScoreChange += SetRandomWord;
+		wordsList = new WordsList();
 	}
 
 
