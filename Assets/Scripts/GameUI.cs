@@ -137,18 +137,20 @@ public class GameUI : MonoBehaviour
 			filePath = Path.Combine(Application.dataPath + "/Raw", dataFileName);
 	#endif
 
-		if (isCityActive && !isCountrysideActive)
+		if (isCityActive)
 		{
 			wordsList.words = cityWords.words;
 		}
-		else if (!isCityActive && isCountrysideActive)
+		if (isCountrysideActive)
 		{
-			wordsList.words = countrysideWords.words;
-		}
-		else
-		{
-			wordsList.words = cityWords.words;
-			wordsList.words.AddRange(countrysideWords.words);
+			if (wordsList.words.Count == 0)
+			{
+				wordsList.words = countrysideWords.words;
+			}
+			else
+			{
+				wordsList.words.AddRange(countrysideWords.words);
+			}
 		}
 	}
 
