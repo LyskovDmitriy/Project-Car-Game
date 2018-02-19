@@ -22,7 +22,7 @@ public class FinishGameUI : MonoBehaviour
 		{
 			if (i == 0)
 			{
-				winnerText.text = players[i].name + " won!";
+				winnerText.text = players[i].name;
 			}
 			playerNameTexts[i].gameObject.SetActive(true);
 			playerScoreTexts[i].gameObject.SetActive(true);

@@ -1,0 +1,11 @@
+{"items":[{"key":"players_number_text","value":"Число игроков"},
+{"key":"words_choice_title","value":"Слова"},
+{"key":"words_choice_city","value":"Город"},
+{"key":"words_choice_countryside","value":"Вне города"},
+{"key":"start_game_button_text","value":"Играть"},
+{"key":"finish_game_button_text","value":"Завершить игру"},
+{"key":"change_word_button_text","value":"Поменять слово"},
+{"key":"won_text","value":"победил!"},
+{"key":"restart_button_text","value":"Сыграть еще"},
+{"key":"change_settings_button_text","value":"Изменить настройки"}
+]}

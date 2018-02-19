@@ -13,12 +13,12 @@ public class GameUI : MonoBehaviour
 	public GameObject finishGameScreen;
 	public PlayerGameField[] playerFields;
 	public Text wordText;
-	public string cityFileName;
-	public string countrysideFileName;
+	public LocalizedWordsData[] localizedWords;
 
 
 	private FinishGameUI finishGameUI;
 	private WordsList wordsList;
+	private SystemLanguage defaultLanguage = SystemLanguage.Russian;
 	private string lastWord;
 
 
@@ -29,6 +29,7 @@ public class GameUI : MonoBehaviour
 			while (true)
 			{
 				string word = wordsList.GetRandomWord();
+
 				if (word == lastWord)
 				{
 					continue;
@@ -90,31 +91,37 @@ public class GameUI : MonoBehaviour
 
 	void LoadWordsData() //needs to be checked on each platform
 	{
+		LocalizedWordsData currentWordsData = GetWordsData(Application.systemLanguage);
+		string cityFileName = currentWordsData.cityWordsFileName;
+		string countrysideFileName = currentWordsData.countrysideWordsFileName;
+
 		bool isCityActive = PlayerPrefs.GetInt("City") == 1;
 		bool isCountrysideActive = PlayerPrefs.GetInt("Countryside") == 1;
 		string cityPath = "";
 		string countrysidePath = "";
 		WordsList cityWords = null;
 		WordsList countrysideWords = null;
+
 	#if UNITY_EDITOR || UNITY_STANDALONE_WIN
 		if (isCityActive)
 		{
 			cityPath = Path.Combine(Application.streamingAssetsPath, cityFileName);
+
+			if (File.Exists(cityPath))
+			{
+				string dataAsJSON = File.ReadAllText(cityPath);
+				cityWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
+			}
 		}
 		if (isCountrysideActive)
 		{
 			countrysidePath = Path.Combine(Application.streamingAssetsPath, countrysideFileName);
-		}
 
-		if (isCityActive && File.Exists(cityPath))
-		{
-			string dataAsJSON = File.ReadAllText(cityPath);
-			cityWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
-		}
-		if (isCountrysideActive && File.Exists(countrysidePath))
-		{
-			string dataAsJSON = File.ReadAllText(countrysidePath);
-			countrysideWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
+			if (File.Exists(countrysidePath))
+			{
+				string dataAsJSON = File.ReadAllText(countrysidePath);
+				countrysideWords = JsonUtility.FromJson<WordsList>(dataAsJSON);
+			}
 		}
 	#elif UNITY_ANDROID
 		cityPath = Path.Combine("jar:file://" + Application.dataPath + "!/assets/", cityFileName);
@@ -143,7 +150,7 @@ public class GameUI : MonoBehaviour
 		}
 		if (isCountrysideActive)
 		{
-			if (wordsList.words.Count == 0)
+			if (!isCityActive)
 			{
 				wordsList.words = countrysideWords.words;
 			}
@@ -166,5 +173,19 @@ public class GameUI : MonoBehaviour
 	void OnDestroy()
 	{
 		PlayerGameField.onScoreChange -= SetRandomWord;
+	}
+
+
+	LocalizedWordsData GetWordsData(SystemLanguage languageToFind)
+	{
+		for (int i = 0; i < localizedWords.Length; i++)
+		{
+			if (localizedWords[i].language == languageToFind)
+			{
+				return localizedWords[i];
+			}
+		}
+
+		return GetWordsData(defaultLanguage);
 	}
 }
