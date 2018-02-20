@@ -867,6 +867,9 @@ MonoBehaviour:
   - {fileID: 1940121488}
   wordText: {fileID: 1983008956}
   localizedWords:
+  - language: 10
+    cityWordsFileName: EnglishCityWords.json
+    countrysideWordsFileName: EnglishCountrysideWords.json
   - language: 30
     cityWordsFileName: RussianCityWords.json
     countrysideWordsFileName: RussianCountrysideWords.json

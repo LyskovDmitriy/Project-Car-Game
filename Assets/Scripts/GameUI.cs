@@ -18,7 +18,7 @@ public class GameUI : MonoBehaviour
 
 	private FinishGameUI finishGameUI;
 	private WordsList wordsList;
-	private SystemLanguage defaultLanguage = SystemLanguage.Russian;
+	private SystemLanguage defaultLanguage = SystemLanguage.English;
 	private string lastWord;
 
 
