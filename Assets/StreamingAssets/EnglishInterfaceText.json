@@ -4,8 +4,13 @@
 {"key":"words_choice_countryside","value":"Countryside"},
 {"key":"start_game_button_text","value":"Start"},
 {"key":"finish_game_button_text","value":"Finish game"},
+{"key":"word_to_find","value":""},
 {"key":"change_word_button_text","value":"Change word"},
 {"key":"won_text","value":"won!"},
 {"key":"restart_button_text","value":"Restart"},
-{"key":"change_settings_button_text","value":"Change settings"}
+{"key":"change_settings_button_text","value":"Change settings"},
+{"key":"help_title","value":"Rules"},
+{"key":"game_rules","value":
+"The game displays a word (for example \"Cow\") which is to be found in real life.\nThe first player to point it out (i.e. \"Cow\" or any other displayed word) gets a point and the word changes.\nThe word can also be changed manually if it is unlikely to be found.\nFor more convenient playing words are divided into 2 categories, city and countryside, that can be activated separately or both at the same time."},
+{"key":"return_from_help_button","value":"Return"}
 ]}

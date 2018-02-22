@@ -37,6 +37,12 @@ public class LanguageManager : MonoBehaviour
 	}
 
 
+	public float GetCurrentLanguageLineSpacing()
+	{
+		return currentLanguageData.lineSpacing;
+	}
+
+
 	void Awake()
 	{
 		if (Instance == null)

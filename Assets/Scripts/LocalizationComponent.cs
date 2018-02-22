@@ -7,6 +7,7 @@ public class LocalizationComponent : MonoBehaviour
 {
 
 	public string key;
+	public bool useLanguageSettingsOnly = false;
 
 
 	void Start () 
@@ -18,8 +19,12 @@ public class LocalizationComponent : MonoBehaviour
 		}
 		else
 		{
-			textComponent.text = LanguageManager.Instance.GetLocalizedText(key);
+			if (!useLanguageSettingsOnly)
+			{
+				textComponent.text = LanguageManager.Instance.GetLocalizedText(key);
+			}
 			textComponent.font = LanguageManager.Instance.GetCurrentLanguageFont();
+			textComponent.lineSpacing = LanguageManager.Instance.GetCurrentLanguageLineSpacing();
 		}
 	}
 }

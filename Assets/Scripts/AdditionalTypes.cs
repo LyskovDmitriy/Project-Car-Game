@@ -52,6 +52,7 @@ public class LanguageFileAndFontData
 {
 	public SystemLanguage language;
 	public Font font;
+	public float lineSpacing;
 	public string localizedTextFileName;
 }
 
