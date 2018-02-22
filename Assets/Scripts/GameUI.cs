@@ -47,6 +47,7 @@ public class GameUI : MonoBehaviour
 
 	public void FinishGame()
 	{
+		Screen.sleepTimeout = SleepTimeout.SystemSetting;
 		gameScreen.SetActive(false);
 		finishGameScreen.SetActive(true);
 
@@ -68,6 +69,7 @@ public class GameUI : MonoBehaviour
 
 	public void StartGame()
 	{
+		Screen.sleepTimeout = SleepTimeout.NeverSleep;
 		gameScreen.SetActive(true);
 		int playerNumber = PlayerPrefs.GetInt("Number of players");
 
